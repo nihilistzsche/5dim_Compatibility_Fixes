@@ -1,13 +1,13 @@
 {
-  "name": "5dim_LogisticMachines_Fix",
+  "name": "5dim_Compatibility_Fixes",
   "version": "0.0.1",
   
-  "title": "5dim_LogisticMachines_Fix",
-  "description": "Fixes for various mods when using 5dim_energy",
+  "title": "5dim_Compatibility_Fixes",
+  "description": "Fixes for various mods when using 5dim mods",
   
   "author": "nihilistzsche",
-  "license": "MIT",
+  "license": "GPL3",
   
-  "dependencies": ["base >= 1.1.6", "?5dim_energy", "?5dim_nuclear", "?Krastorio2", "?Logistic-Machines", "?EditorExtensions", "?Circuit_Lamps", "?Dectorio", "?BlackMarket2-Deadlock", "?infused-lab", "? armor-frames", "? Total_Automation" ],
+  "dependencies": ["base >= 1.1.6", "?5dim_energy", "?5dim_nuclear", "?5dim_module", "?Krastorio2", "?Logistic-Machines", "?EditorExtensions", "?Circuit_Lamps", "?Dectorio", "?BlackMarket2-Deadlock", "?infused-lab", "? armor-frames", "? Total_Automation", "? mini-machines", "? micro-machines" ],
   "factorio_version": "1.1"
 }
