@@ -90,7 +90,7 @@ if (mods["Krastorio2"] or mods["space-exploration"]) and mods["5dim_automation"]
         end
         if mods["space-exploration"] then
             if mods["Krastorio2"] then table.insert(data.raw.lab[lab_name].inputs, "kr-optimization-tech-card") end
-            table.insert(data.raw.lab[lab_name].inputs, "se-rocket-scient-pack")
+            table.insert(data.raw.lab[lab_name].inputs, "se-rocket-science-pack")
         end
     end
 end
