@@ -26,18 +26,49 @@ remove_next_upgrade(data.raw["roboport"]["cm-item-log-dispatch"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-small-repeater"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-medium-repeater"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-big-repeater"])
+remove_next_upgrade(data.raw["reactor"]["nuclear-reactor"])
+remove_next_upgrade(data.raw["beacon"]["beacon"])
+
 for k, v in pairs(data.raw["mining-drill"]) do
-    if string.starts_with(k, "cm-production-buddy") then remove_next_upgrade(v) end
+    if string.sub(k, 1, 20) == "cm-production-buddy" then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["ammo-turret"]) do
-    if string.starts_with(k, "cm-") then remove_next_upgrade(v) end
+    if string.sub(k, 1, 3) == "cm-" then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["electric-turret"]) do
-    if string.starts_with(k, "cm-") then remove_next_upgrade(v) end
+    if string.sub(k, 1, 3) == "cm-" then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["assembling-machine"]) do
-    if k:sub(-14) == "-unit-deployer" then remove_next_upgrade(v) end
+    if string.sub(k, -14) == "-unit-deployer" then remove_next_upgrade(v) end
 end
+
+-----------------------------------------------------------------------------------
+-- Dear Nihilistzsche, "string.starts_with" is not a thing, use string.sub instead
+-----------------------------------------------------------------------------------
+
+
+-- This checks if anything in the data.raw table isnt named "5d-" and if it has a next_upgrade that starts with "5d-" then it removes the next_upgrade
+for k, v in pairs(data.raw) do
+    -- step 1: loop through all the tables in data.raw
+    for k2, v2 in pairs(v) do
+        -- step 2: loop through all the items in the table
+        if v2.next_upgrade then
+            -- step 3: check if the item has a next_upgrade
+            if v2.name:sub(1, 3) == "5d-" then
+                -- step 4: check if the item is named "5d-" and if it is then skip to the next item
+                return
+            else
+                -- step 5: check if the item is not named "5d-"
+                if v2.next_upgrade:sub(1, 3) == "5d-" then
+                    -- step 6: check if the next_upgrade is named "5d-" and if it is then remove the next_upgrade
+                    log("Removing next upgrade from " .. v2.name)
+                    v2.next_upgrade = nil
+                end
+            end
+        end
+    end
+end
+
 if mods["5dim_module"] then
     data.raw.beacon.beacon.collision_box = table.deepcopy(data.raw.beacon["5d-beacon-02"].collision_box)
     data.raw.beacon.beacon.selection_box = table.deepcopy(data.raw.beacon["5d-beacon-02"].selection_box)
@@ -47,6 +78,8 @@ if mods["5dim_nuclear"] then
     data.raw.reactor["nuclear-reactor"].collision_mask =
         table.deepcopy(data.raw.reactor["5d-nuclear-reactor-02"].collision_mask)
 end
+
+
 
 if mods["space-exploration"] then
     local function find_furnace(name)
