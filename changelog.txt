@@ -1,0 +1,8 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.0.5
+Date: 2023-12-16
+  Changes:
+    - Redo how boxes/masks are changed, instead of copying back from 5dims copy forward
+      to 5dim instead.
+    - Adjusted optional dependencies to prevent an error regarding collision masks and beacons.
+

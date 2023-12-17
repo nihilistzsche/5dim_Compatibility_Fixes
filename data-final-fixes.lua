@@ -1,3 +1,5 @@
+function starts_with(str, tst) return str:sub(1, #tst) == tst end
+
 local function remove_next_upgrade(item)
     if item then
         log("Removing next upgrade from " .. item.name)
@@ -26,26 +28,32 @@ remove_next_upgrade(data.raw["roboport"]["cm-item-log-dispatch"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-small-repeater"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-medium-repeater"])
 remove_next_upgrade(data.raw["roboport"]["cm-item-log-big-repeater"])
+remove_next_upgrade(data.raw["roboport"]["lognet-fcpu"])
 for k, v in pairs(data.raw["mining-drill"]) do
-    if string.starts_with(k, "cm-production-buddy") then remove_next_upgrade(v) end
+    if starts_with(k, "cm-production-buddy") then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["ammo-turret"]) do
-    if string.starts_with(k, "cm-") then remove_next_upgrade(v) end
+    if starts_with(k, "cm-") then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["electric-turret"]) do
-    if string.starts_with(k, "cm-") then remove_next_upgrade(v) end
+    if starts_with(k, "cm-") then remove_next_upgrade(v) end
 end
 for k, v in pairs(data.raw["assembling-machine"]) do
     if k:sub(-14) == "-unit-deployer" then remove_next_upgrade(v) end
 end
 if mods["5dim_module"] then
-    data.raw.beacon.beacon.collision_box = table.deepcopy(data.raw.beacon["5d-beacon-02"].collision_box)
-    data.raw.beacon.beacon.selection_box = table.deepcopy(data.raw.beacon["5d-beacon-02"].selection_box)
-    data.raw.beacon.beacon.collision_mask = table.deepcopy(data.raw.beacon["5d-beacon-02"].collision_mask)
+    for i = 2, 10 do
+        for _, key in pairs({"collision_box", "selection_box", "collision_mask"}) do
+            data.raw.beacon["5d-beacon-"..(i < 10 and "0" or "")..i][key] = util.table.deepcopy(data.raw.beacon.beacon[key])
+        end
+    end
+    remove_next_upgrade(data.raw.beacon["ee-super-beacon"])
+    remove_next_upgrade(data.raw.beacon["ee-super-beacon-spaced"])
 end
 if mods["5dim_nuclear"] then
-    data.raw.reactor["nuclear-reactor"].collision_mask =
-        table.deepcopy(data.raw.reactor["5d-nuclear-reactor-02"].collision_mask)
+    for i = 2, 10 do
+        data.raw.reactor["5d-nuclear-reactor-"..(i < 10 and "0" or "")..i].collision_mask = util.table.deepcopy(data.raw.reactor["nuclear-reactor"].collision_mask)
+    end
 end
 
 if mods["space-exploration"] then
@@ -79,18 +87,25 @@ if mods["space-exploration"] then
     end
 end
 
-if (mods["Krastorio2"] or mods["space-exploration"]) and mods["5dim_automation"] then
+if mods["5dim_automation"] then
     for i = 2, 10 do
         local lab_name = "5d-lab-" .. (i < 10 and "0" or "") .. i
+        data.raw.lab[lab_name].se_allow_in_space = true
         if mods["Krastorio2"] then
-            table.insert(data.raw.lab[lab_name].inputs, "basic-tech-card")
-            table.insert(data.raw.lab[lab_name].inputs, "production-science-pack")
-            table.insert(data.raw.lab[lab_name].inputs, "utility-science-pack")
-            table.insert(data.raw.lab[lab_name].inputs, "matter-tech-card")
+            data.raw.lab[lab_name].inputs = util.table.deepcopy(data.raw.lab["biusart-lab"].inputs)
+        else
+            data.raw.lab[lab_name].inputs = util.table.deepcopy(data.raw.lab["lab"].inputs)
         end
-        if mods["space-exploration"] then
-            if mods["Krastorio2"] then table.insert(data.raw.lab[lab_name].inputs, "kr-optimization-tech-card") end
-            table.insert(data.raw.lab[lab_name].inputs, "se-rocket-science-pack")
+    end
+end
+
+for lab, labData in next, data.raw.lab do
+    local inputs_seen = {}
+    for i, input in ipairs(labData.inputs) do
+        if inputs_seen[input] then
+            labData.inputs[i] = nil
+        else
+            inputs_seen[input] = true
         end
     end
 end
